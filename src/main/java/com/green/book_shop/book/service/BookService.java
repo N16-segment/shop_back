@@ -16,4 +16,10 @@ public interface BookService {
   // - 1. 중복 확인, 2. 카테고리 등록  해야하므로 여기서는 하나의 기능만 만들어두고
   // 서비스에서 만든 기능에 서비스 임플에서 두가지 기능을 넣어서 기능을 구현할 수 있도록 한다.
   public int insertCategory(String cateName);
+
+  // 도서 이미지 등록
+  public void insertImgs(BookDTO bookDTO);
+
+  // 다음에 들어갈 BOOK_CODE를 조회
+  public int getNextBookCode();
 }

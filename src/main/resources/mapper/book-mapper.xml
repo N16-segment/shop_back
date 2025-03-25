@@ -21,20 +21,22 @@
         ORDER BY CATE_CODE
     </select>
 
-    <!--도서 등록 쿼리-->
+    <!--도서 등록 쿼리 (BOOK_CODE추가)-->
     <insert id="insertBook">
         INSERT INTO BOOK(
-        BOOK_NAME
-        ,BOOK_PRICE
-        ,PUBLISHER
-        ,BOOK_INFO
-        ,CATE_CODE
+          BOOK_CODE
+          , BOOK_NAME
+          , BOOK_PRICE
+          , PUBLISHER
+          , BOOK_INFO
+          , CATE_CODE
         ) VALUES(
-        #{bookName}
-        ,#{bookPrice}
-        ,#{publisher}
-        ,#{bookInfo}
-        ,#{cateCode}
+          #{bookCode}
+          ,#{bookName}
+          ,#{bookPrice}
+          ,#{publisher}
+          ,#{bookInfo}
+          ,#{cateCode}
         )
     </insert>
 
@@ -55,16 +57,36 @@
         )
     </insert>
 
+
     <!--도서 이미지 등록-->
     <insert id="insertImgs">
         INSERT INTO BOOK_IMG
             (ORIGIN_FILE_NAME, ATTACHED_FILE_NAME, IS_MAIN, BOOK_CODE)
         VALUES
-            ('aaa.jpg', '111-2222.jpg', 'Y', 1),
-            ('aaa.jpg', '111-2222.jpg', 'N', 1);
+        <!-- 첨부한 파일 갯수만큼 반복해서 insert -->
+        <!-- collection : 반복을 돌릴 데이터(배열, 리스트) -->
+        <!-- collection에 작성한 글자는 쿼리의 빈값을 채우기 위해 가져온 DTO객체의 GETTER를 호출한다 -->
+        <!-- item : 하나씩 뺀 데이터 -->
+        <!-- separator : 반복문이 한 번 실행될때마다 추가할 내용. 단, 마지막 반복 시에는 적용되지 않는다.
+                        반복되는 데이터 사이에 쉼표를 붙여준다. -->
+        <foreach collection="imgList" item="img" separator=","> <!--bookDTO.getImgList()-->
+            (
+            #{img.originFileName}
+            , #{img.attachedFileName}
+            , #{img.isMain}
+            , #{img.bookCode}
+            )
+        </foreach>
     </insert>
 
-
+    <!-- 다음에 들어갈 BOOK_CODE를 조회 -->
+    <!--  BOOK 테이블에 인써트 하기 전에,
+          BOOK 테이블에 저장된 BOOK_CODE 중 가장 큰 수를 조회해서
+            + 1 을 해주고 그걸 다음 BOOK_CODE로 지정해준다.  -->
+    <select id="getNextBookCode" resultType="int">
+      SELECT IFNULL(MAX(BOOK_CODE) ,0) + 1
+      FROM book;
+    </select>
 
 
 
